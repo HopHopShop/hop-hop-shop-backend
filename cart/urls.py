@@ -1,4 +1,5 @@
 from django.urls import path
+from rest_framework import routers
 from cart.views import (
     CartAddItemView,
     CartRemoveItemView,
@@ -6,9 +7,15 @@ from cart.views import (
     CartSubtractItemView,
     UseCouponView,
     RemoveCouponView,
+    CouponView,
 )
 
 app_name = "cart"
+
+
+router = routers.DefaultRouter()
+router.register("coupon", CouponView, basename="coupon")
+
 
 urlpatterns = [
     path("", CartDetailView.as_view(), name="cart_detail"),
@@ -23,6 +30,8 @@ urlpatterns = [
         CartSubtractItemView.as_view(),
         name="cart_subtract",
     ),
-    path("coupon/", UseCouponView.as_view(), name="coupon"),
+    path("coupon/apply/", UseCouponView.as_view(), name="coupon_use"),
     path("coupon/remove/", RemoveCouponView.as_view(), name="coupon_remove"),
 ]
+
+urlpatterns += router.urls

@@ -13,8 +13,9 @@ def product_image_file_path(instance, filename):
 
 
 class Category(models.Model):
-    name = models.CharField(max_length=100, db_index=True)
+    name = models.CharField(max_length=100, db_index=True, unique=True)
     slug = models.SlugField(max_length=255, unique=True)
+    description = models.TextField(null=True, blank=True)
     image = models.ImageField(
         null=True,
         blank=True,
@@ -32,14 +33,15 @@ class Category(models.Model):
 
     class Meta:
         app_label = "shop"
+        ordering = ["-id"]
 
 
 class Product(models.Model):
-    name = models.CharField(max_length=100, db_index=True)
-    category = models.ForeignKey(Category, on_delete=models.CASCADE)
+    name = models.CharField(max_length=100, db_index=True, unique=True)
+    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True)
     slug = models.SlugField(max_length=255, unique=True)
     price = models.DecimalField(max_digits=10, decimal_places=2)
-    SKU = models.IntegerField(unique=True, db_index=True)
+    SKU = models.CharField(max_length=100)
     description = models.TextField()
     views = models.IntegerField(default=0)
 
@@ -49,13 +51,15 @@ class Product(models.Model):
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = slugify(self.name)
+        if not self.SKU:
+            self.SKU = slugify(self.name)
         return super().save(*args, **kwargs)
 
     class Meta:
         verbose_name = "Product"
         verbose_name_plural = "Products"
         app_label = "shop"
-        ordering = ["id"]
+        ordering = ["-id"]
 
 
 class ProductImage(models.Model):
@@ -73,7 +77,7 @@ class ProductImage(models.Model):
         return f"Image for {self.product.name}"
 
     class Meta:
-        ordering = ["id"]
+        ordering = ["-id"]
         app_label = "shop"
 
 

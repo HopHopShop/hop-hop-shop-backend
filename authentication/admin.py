@@ -20,6 +20,7 @@ class UserAdmin(DjangoUserAdmin):
                     "is_superuser",
                     "groups",
                     "user_permissions",
+                    "image"
                 )
             },
         ),

@@ -1,7 +1,12 @@
 import datetime
+from decimal import Decimal
+
 from rest_framework import serializers
+from rest_framework.exceptions import ValidationError
 
 from checkout.models import Order, OrderItem
+from checkout.services import DashboardStatistic
+from shop.serializers import ProductSerializer
 
 
 class CardInformationSerializer(serializers.Serializer):
@@ -57,14 +62,46 @@ class CardInformationSerializer(serializers.Serializer):
 
 
 class OrderItemSerializer(serializers.ModelSerializer):
+    product = ProductSerializer()
+
     class Meta:
         model = OrderItem
-        fields = ["product", "quantity", "price"]
+        fields = [
+            "order",
+            "product",
+            "quantity",
+            "price",
+        ]
+
+
+class OrderListSerializer(serializers.ModelSerializer):
+    total_quantity = serializers.SerializerMethodField()
+    total_price = serializers.SerializerMethodField()
+
+    def get_total_quantity(self, obj):
+        return sum(item.quantity for item in obj.items.all())
+
+    def get_total_price(self, obj):
+        return sum(item.quantity * item.price for item in obj.items.all())
+
+    class Meta:
+        model = Order
+        fields = [
+            "id",
+            "payment_status",
+            "order_status",
+            "created_at",
+            "total_quantity",
+            "total_price",
+        ]
 
 
 class OrderSerializer(serializers.ModelSerializer):
     items = OrderItemSerializer(many=True, read_only=True)
-    card_information = CardInformationSerializer(write_only=True)
+    card_information = CardInformationSerializer(write_only=True, required=False)
+    subtotal_price = serializers.SerializerMethodField()
+    total_price = serializers.SerializerMethodField()
+    discount = serializers.SerializerMethodField()
 
     class Meta:
         model = Order
@@ -79,20 +116,64 @@ class OrderSerializer(serializers.ModelSerializer):
             "shipping_city",
             "shipping_address",
             "shipping_postcode",
-            "paid",
-            "status",
+            "payment_id",
+            "payment_type",
+            "payment_status",
+            "order_status",
             "items",
+            "subtotal_price",
+            "total_price",
+            "coupon",
+            "discount",
             "card_information",
         ]
-        write_only_fields = ["created_at", "updated_at", "paid"]
-        read_only_fields = ["customer", "paid", "status"]
+        read_only_fields = [
+            "customer",
+            "coupon",
+            "payment_id",
+            "payment_status",
+            "order_status",
+            "total_price",
+            "created_at",
+            "updated_at",
+            "created_at"
+        ]
+
+    def validate(self, attrs):
+        if attrs.get("payment_type", None) == "card" and not attrs.get("card_information", None):
+            raise ValidationError("Card information is required for card payment type.")
+        return attrs
+
+    def get_subtotal_price(self, obj):
+        return sum(item.quantity * item.price for item in obj.items.all())
+
+    def get_discount(self, obj):
+        if obj.coupon:
+            return obj.coupon.discount
+
+    def get_total_price(self, obj):
+        discount = self.get_discount(obj)
+        subtotal_price = self.get_subtotal_price(obj)
+        if discount:
+            return subtotal_price - (subtotal_price * Decimal(discount / 100))
+        return subtotal_price
 
     def create(self, validated_data):
-        card_information = validated_data.pop("card_information", None)
+        validated_data.pop("card_information", None)
         order = Order.objects.create(**validated_data)
         return order
 
     def update(self, instance, validated_data):
-        card_information = validated_data.pop("card_information", None)
+        validated_data.pop("card_information", None)
         instance = super().update(instance, validated_data)
         return instance
+
+
+class DashboardStatisticSerializer(serializers.Serializer):
+    total_orders = serializers.IntegerField()
+    active_orders = serializers.IntegerField()
+    completed_orders = serializers.IntegerField()
+    returned_orders = serializers.IntegerField()
+
+    def create(self, validated_data):
+        return DashboardStatistic(**validated_data)

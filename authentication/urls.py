@@ -1,21 +1,29 @@
 from django.urls import path
+from rest_framework import routers
+
 from authentication.views import (
     CreateCustomerView,
-    ManageUserView,
-    CustomTokenObtainPairView,
+    CustomerProfileView,
+    CustomTokenRefreshView,
+    LoginView,
+    LogoutView,
+    CustomersListView, PasswordResetRequestView, ResetPasswordView, ProfileOrder,
 )
-from rest_framework_simplejwt.views import (
-    TokenObtainPairView,
-    TokenRefreshView,
-    TokenVerifyView,
-)
+
+router = routers.DefaultRouter()
+router.register(r"customers", CustomersListView, basename="customers")
+router.register(r"profile-orders", ProfileOrder, basename="profile-order")
 
 
 app_name: str = "authentication"
 urlpatterns = [
-    path("token/", CustomTokenObtainPairView.as_view(), name="token_obtain_pair"),
-    path("token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
-    path("token/verify/", TokenVerifyView.as_view(), name="token_verify"),
+    path("login/", LoginView.as_view(), name="login"),
+    path("token/refresh/", CustomTokenRefreshView.as_view(), name="token_refresh"),
     path("registration/", CreateCustomerView.as_view(), name="create"),
-    path("profile/", ManageUserView.as_view(), name="profile"),
+    path("logout/", LogoutView.as_view(), name="logout"),
+    path("profile/", CustomerProfileView.as_view(), name="profile"),
+    path("reset-password/request/", PasswordResetRequestView.as_view(), name="request_reset_password"),
+    path("reset-password/", ResetPasswordView.as_view(), name="reset_password"),
 ]
+
+urlpatterns += router.urls

@@ -13,6 +13,11 @@ class ProductNotExistException(APIException):
     default_detail = "Product does not exist."
 
 
+class CouponNotExistException(APIException):
+    status_code = 400
+    default_detail = "Coupon does not exist."
+
+
 class CartEmptyException(APIException):
     status_code = 400
     default_detail = "Cart is empty"
@@ -52,6 +57,12 @@ class StripeGeneralError(APIException):
     status_code = 500
     default_detail = "Something went wrong. You were not charged. Please try again."
     default_code = "stripe_error"
+
+
+class InvalidCredentialsError(APIException):
+    status_code = 401
+    default_detail = "Invalid credentials."
+    default_code = "invalid_credentials"
 
 
 class CartExceptionHandler(ExceptionHandler):

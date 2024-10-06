@@ -1,5 +1,4 @@
 from decimal import Decimal
-
 from django.contrib.auth import get_user_model
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
@@ -19,6 +18,9 @@ class Coupon(models.Model):
 
     def __str__(self):
         return f"{self.code} - {self.discount}%"
+
+    class Meta:
+        ordering = ["-id"]
 
 
 class Cart(models.Model):
@@ -46,6 +48,9 @@ class Cart(models.Model):
 
     def coupon_is_used(self):
         return bool(self.coupon)
+
+    class Meta:
+        ordering = ["-id"]
 
 
 class CartItem(models.Model):

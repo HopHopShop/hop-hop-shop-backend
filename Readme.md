@@ -4,6 +4,9 @@ This project is developed using the following technologies:
 
 - Django: Python-based web framework for building web applications.
 - Database: PostgreSQL
+- Redis: In-memory data structure store, used as a message broker for Celery and for caching.
+- Celery: Distributed task queue for handling asynchronous and scheduled tasks.
+- Swagger: Tool for documenting and testing RESTful APIs.
 
 ## Usage Instructions
 

@@ -2,22 +2,76 @@ from rest_framework import serializers
 from shop.models import Category, Product, ProductAttributes, ProductImage
 
 
+class CategoryImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Category
+        fields = ("image",)
+
+    def update(self, instance, validated_data):
+        image = validated_data.get("image", None)
+        if image is not None:
+            instance.image = image
+            instance.save()
+        return instance
+
+
 class ProductImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductImage
-        fields = ("image",)
+        fields = (
+            "id",
+            "image",
+        )
 
 
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
-        fields = ["id", "name", "slug", "image"]
+        fields = [
+            "id",
+            "name",
+            "description",
+            "image",
+        ]
 
 
 class ProductAttributesSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductAttributes
         fields = ["brand", "material", "style", "size"]
+
+
+class ProductImageUploadSerializer(serializers.Serializer):
+    uploaded_images = serializers.ListField(
+        child=serializers.ImageField(
+            max_length=1000000, allow_empty_file=False, use_url=False
+        ),
+        write_only=True,
+    )
+
+    def create(self, validated_data):
+        images = validated_data["uploaded_images"]
+        product = self.context["product"]
+        product_images = [
+            ProductImage(product=product, image=image) for image in images
+        ]
+        ProductImage.objects.bulk_create(product_images)
+        return product_images
+
+    def update(self, instance, validated_data):
+        instance.product_images.all().delete()
+        images = validated_data["uploaded_images"]
+        product_images = [
+            ProductImage(product=instance, image=image) for image in images
+        ]
+        ProductImage.objects.bulk_create(product_images)
+        return product_images
+
+    class Meta:
+        model = ProductImage
+        fields = [
+            "image",
+        ]
 
 
 class ProductSerializer(serializers.ModelSerializer):
@@ -40,6 +94,51 @@ class ProductSerializer(serializers.ModelSerializer):
     def get_images(self, obj):
         first_image = obj.product_images.first()
         return ProductImageSerializer(first_image).data if first_image else None
+
+
+class ProductDetailSerializer(serializers.ModelSerializer):
+    attributes = ProductAttributesSerializer(
+        source="product_attributes", required=False
+    )
+    category = CategorySerializer(read_only=True)
+    images = ProductImageSerializer(many=True, read_only=True, source="product_images")
+    slug = serializers.CharField(read_only=True)
+
+    class Meta:
+        model = Product
+        fields = [
+            "id",
+            "name",
+            "slug",
+            "price",
+            "SKU",
+            "description",
+            "category",
+            "attributes",
+            "images",
+        ]
+
+
+class ProductCreateUpdateSerializer(serializers.ModelSerializer):
+    attributes = ProductAttributesSerializer(
+        source="product_attributes", required=False
+    )
+    slug = serializers.CharField(read_only=True)
+    SKU = serializers.CharField(required=False)
+
+
+    class Meta:
+        model = Product
+        fields = [
+            "id",
+            "name",
+            "slug",
+            "price",
+            "SKU",
+            "description",
+            "category",
+            "attributes",
+        ]
 
     def create(self, validated_data):
         product_attributes_data = validated_data.pop("product_attributes", None)
@@ -68,25 +167,3 @@ class ProductSerializer(serializers.ModelSerializer):
         if value <= 0:
             raise serializers.ValidationError("Price must be greater than 0.")
         return value
-
-
-class ProductDetailSerializer(serializers.ModelSerializer):
-    attributes = ProductAttributesSerializer(
-        read_only=True, source="product_attributes"
-    )
-    category = CategorySerializer(read_only=True)
-    images = ProductImageSerializer(many=True, read_only=True, source="product_images")
-
-    class Meta:
-        model = Product
-        fields = [
-            "id",
-            "name",
-            "slug",
-            "price",
-            "SKU",
-            "description",
-            "category",
-            "attributes",
-            "images",
-        ]

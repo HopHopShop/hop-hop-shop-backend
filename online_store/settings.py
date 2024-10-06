@@ -3,6 +3,7 @@ from pathlib import Path
 
 from django.urls import reverse_lazy
 from dotenv import load_dotenv
+from datetime import timedelta
 
 from utils.settings_utils import add_prefix_to_allowed_hosts
 
@@ -47,15 +48,19 @@ INSTALLED_APPS = [
     "drf_standardized_errors",
     "django_filters",
     "corsheaders",
+    "django_celery_results",
     "drf_spectacular",
     "cloudinary_storage",
     "cloudinary",
+
     "authentication",
     "shop",
     "email_subscription",
     "cart",
     "wishlist",
     "checkout",
+    "news",
+    "contact_us"
 ]
 
 
@@ -175,6 +180,7 @@ SPECTACULAR_SETTINGS = {
     "TITLE": "Hop Hop Shop API",
     "VERSION": "1.0.0",
     "SERVE_INCLUDE_SCHEMA": False,
+    'COMPONENT_SPLIT_REQUEST': True,
     "SWAGGER_UI_SETTINGS": {
         "deepLinking": True,
         "defaultModelRendering": "model",
@@ -206,10 +212,26 @@ DRF_STANDARDIZED_ERRORS = {
         "utils.custom_exceptions.StripeGeneralError": "drf_standardized_errors.exceptions.BaseAPIException",
         "utils.custom_exceptions.ProductAlreadyExistException": "drf_standardized_errors.exceptions.BaseAPIException",
         "utils.custom_exceptions.ProductNotExistException": "drf_standardized_errors.exceptions.BaseAPIException",
+        "utils.custom_exceptions.CouponNotExistException": "drf_standardized_errors.exceptions.BaseAPIException",
+        "utils.custom_exceptions.InvalidCredentialsError": "drf_standardized_errors.exceptions.BaseAPIException",
     },
 }
 
-LOGIN_URL = reverse_lazy("authentication:token_obtain_pair")
+CSRF_COOKIE_HTTPONLY = True
+
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(days=7),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=30),
+    "ROTATE_REFRESH_TOKENS": True,
+    "BLACKLIST_AFTER_ROTATION": True,
+    "AUTH_COOKIE": "refresh_token",
+    "AUTH_COOKIE_SECURE": True,
+    "AUTH_COOKIE_HTTPONLY": True,
+    "AUTH_COOKIE_PATH": "/",
+    "AUTH_COOKIE_SAMESITE": "None",
+}
+
+LOGIN_URL = reverse_lazy("authentication:login")
 
 BRUTE_FORCE_THRESHOLD = 3  # Allow only 3 failed login attempts
 BRUTE_FORCE_TIMEOUT = 300  # Lock the user out for 5 minutes (300 seconds)
@@ -218,3 +240,18 @@ CART_SESSION_ID = "cart"
 WISHLIST_SESSION_ID = "wishlist"
 
 STRIPE_SECRET_KEY = os.environ.get("STRIPE_SECRET_KEY")
+
+CELERY_BROKER_URL = os.getenv("REDIS_URL")
+CELERY_ACCEPT_CONTENT = {"application/json"}
+CELERY_RESULT_SERIALIZER = "json"
+CELERY_TASK_SERIALIZER = "json"
+CELERY_TIMEZONE = "Europe/Kyiv"
+CELERY_RESULT_BACKEND = "django-db"
+
+
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_PORT = 587
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
+EMAIL_USE_TLS = True

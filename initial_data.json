@@ -1,10 +1,83 @@
 [
   {
+    "model": "authentication.customer",
+    "pk": 1,
+    "fields": {
+      "password": "pbkdf2_sha256$720000$XMLpCpo2kFrLYTUG8tuIbP$HdukXNbEi+/HcWfgogJxLN89wUO5qhRlI9SDYXR2/6A=",
+      "last_login": null,
+      "is_superuser": true,
+      "first_name": "",
+      "last_name": "",
+      "is_staff": true,
+      "is_active": true,
+      "date_joined": "2024-07-18T10:15:44.685Z",
+      "email": "admin@admin.com",
+      "phone_number": "234234234",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "authentication.customer",
+    "pk": 2,
+    "fields": {
+      "password": "pbkdf2_sha256$720000$ntL6IOPJARJWcaNpXqXC6S$s21gCMBK/p5hx0AkMhtzxJQntEtkvIwVmh6M3FPueGw=",
+      "last_login": null,
+      "is_superuser": true,
+      "first_name": "",
+      "last_name": "",
+      "is_staff": true,
+      "is_active": true,
+      "date_joined": "2024-08-21T19:07:49.641Z",
+      "email": "hhs-admin-frontend@mail.com",
+      "phone_number": "123123123",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "authentication.customer",
+    "pk": 3,
+    "fields": {
+      "password": "pbkdf2_sha256$720000$c4W5TfPcpHdR2CN0XJd189$gYMPEUC6elIBep4eUvlfSoKbjfyl/cqx1f6C2z1F+zE=",
+      "last_login": null,
+      "is_superuser": true,
+      "first_name": "",
+      "last_name": "",
+      "is_staff": true,
+      "is_active": true,
+      "date_joined": "2024-08-21T19:08:12.716Z",
+      "email": "hhs-admin-backend@mail.com",
+      "phone_number": "454545",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "authentication.customer",
+    "pk": 4,
+    "fields": {
+      "password": "pbkdf2_sha256$720000$I5T37cfUlc1tAbiDWos0d8$mPAwfdzM2owZWzvJTnmAhWfIeJeQrC3h545PvpiY8WA=",
+      "last_login": null,
+      "is_superuser": true,
+      "first_name": "",
+      "last_name": "",
+      "is_staff": true,
+      "is_active": true,
+      "date_joined": "2024-08-21T19:08:28.579Z",
+      "email": "hhs-admin-qa@mail.com",
+      "phone_number": "565656",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
     "model": "shop.category",
     "pk": 1,
     "fields": {
       "name": "Electronics",
       "slug": "electronics",
+      "description": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
       "image": "uploads/category/ZANVnHE_ykehfz.jpeg"
     }
   },
@@ -14,6 +87,7 @@
     "fields": {
       "name": "Books",
       "slug": "books",
+      "description": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
       "image": "uploads/category/34_admja8.jpg"
     }
   },
@@ -23,6 +97,7 @@
     "fields": {
       "name": "Clothing",
       "slug": "clothing",
+      "description": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
       "image": "uploads/category/QkIa5tT_kcpjx3.jpeg"
     }
   },
@@ -32,6 +107,7 @@
     "fields": {
       "name": "Home & Kitchen",
       "slug": "home-kitchen",
+      "description": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
       "image": "uploads/category/Qphac99_wdtlzh.jpeg"
     }
   },
@@ -41,6 +117,7 @@
     "fields": {
       "name": "Toys & Games",
       "slug": "toys-games",
+      "description": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
       "image": "uploads/category/2_2_e8ag4f.png"
     }
   },
@@ -50,6 +127,7 @@
     "fields": {
       "name": "Sports & Outdoors",
       "slug": "sports-outdoors",
+      "description": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
       "image": "uploads/category/1_qjisye.jpg"
     }
   },
@@ -59,6 +137,7 @@
     "fields": {
       "name": "Beauty & Personal Care",
       "slug": "beauty-personal-care",
+      "description": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
       "image": "uploads/category/4_6_qpqcvx.png"
     }
   },
@@ -69,7 +148,7 @@
       "name": "Smartphone",
       "category": 1,
       "slug": "smartphone",
-      "price": 699,
+      "price": "699.00",
       "SKU": 123456,
       "description": "Latest model with advanced features",
       "views": 50
@@ -82,7 +161,7 @@
       "name": "Laptop",
       "category": 1,
       "slug": "laptop",
-      "price": 999,
+      "price": "999.00",
       "SKU": 123457,
       "description": "High-performance laptop for work and play",
       "views": 100
@@ -95,7 +174,7 @@
       "name": "Bluetooth Speaker",
       "category": 1,
       "slug": "bluetooth-speaker",
-      "price": 49,
+      "price": "49.00",
       "SKU": 123458,
       "description": "Portable speaker with excellent sound quality",
       "views": 75
@@ -108,7 +187,7 @@
       "name": "E-Reader",
       "category": 2,
       "slug": "e-reader",
-      "price": 129,
+      "price": "129.00",
       "SKU": 223456,
       "description": "E-Reader with high-resolution display",
       "views": 80
@@ -121,7 +200,7 @@
       "name": "Science Fiction Book",
       "category": 2,
       "slug": "science-fiction-book",
-      "price": 20,
+      "price": "20.00",
       "SKU": 223457,
       "description": "A captivating science fiction story",
       "views": 150
@@ -134,7 +213,7 @@
       "name": "Cookbook",
       "category": 2,
       "slug": "cookbook",
-      "price": 25,
+      "price": "25.00",
       "SKU": 223458,
       "description": "Delicious recipes for everyday meals",
       "views": 60
@@ -147,7 +226,7 @@
       "name": "T-Shirt",
       "category": 3,
       "slug": "t-shirt",
-      "price": 15,
+      "price": "15.00",
       "SKU": 323456,
       "description": "Comfortable cotton t-shirt",
       "views": 90
@@ -160,7 +239,7 @@
       "name": "Jeans",
       "category": 3,
       "slug": "jeans",
-      "price": 40,
+      "price": "40.00",
       "SKU": 323457,
       "description": "Stylish denim jeans",
       "views": 110
@@ -173,7 +252,7 @@
       "name": "Jacket",
       "category": 3,
       "slug": "jacket",
-      "price": 60,
+      "price": "60.00",
       "SKU": 323458,
       "description": "Warm winter jacket",
       "views": 70
@@ -186,7 +265,7 @@
       "name": "Blender",
       "category": 4,
       "slug": "blender",
-      "price": 30,
+      "price": "30.00",
       "SKU": 423456,
       "description": "High-speed blender for smoothies",
       "views": 50
@@ -199,7 +278,7 @@
       "name": "Coffee Maker",
       "category": 4,
       "slug": "coffee-maker",
-      "price": 80,
+      "price": "80.00",
       "SKU": 423457,
       "description": "Automatic coffee maker with timer",
       "views": 65
@@ -212,7 +291,7 @@
       "name": "Vacuum Cleaner",
       "category": 4,
       "slug": "vacuum-cleaner",
-      "price": 150,
+      "price": "150.00",
       "SKU": 423458,
       "description": "Powerful vacuum cleaner with multiple attachments",
       "views": 120
@@ -225,7 +304,7 @@
       "name": "Action Figure",
       "category": 5,
       "slug": "action-figure",
-      "price": 25,
+      "price": "25.00",
       "SKU": 523456,
       "description": "Collectible action figure",
       "views": 90
@@ -238,7 +317,7 @@
       "name": "Board Game",
       "category": 5,
       "slug": "board-game",
-      "price": 40,
+      "price": "40.00",
       "SKU": 523457,
       "description": "Fun board game for the whole family",
       "views": 150
@@ -251,7 +330,7 @@
       "name": "Puzzle",
       "category": 5,
       "slug": "puzzle",
-      "price": 20,
+      "price": "20.00",
       "SKU": 523458,
       "description": "Challenging jigsaw puzzle",
       "views": 70
@@ -264,7 +343,7 @@
       "name": "Tennis Racket",
       "category": 6,
       "slug": "tennis-racket",
-      "price": 100,
+      "price": "100.00",
       "SKU": 623456,
       "description": "Lightweight tennis racket",
       "views": 80
@@ -277,7 +356,7 @@
       "name": "Yoga Mat",
       "category": 6,
       "slug": "yoga-mat",
-      "price": 30,
+      "price": "30.00",
       "SKU": 623457,
       "description": "Non-slip yoga mat",
       "views": 95
@@ -290,7 +369,7 @@
       "name": "Running Shoes",
       "category": 6,
       "slug": "running-shoes",
-      "price": 120,
+      "price": "120.00",
       "SKU": 623458,
       "description": "Comfortable running shoes",
       "views": 110
@@ -303,7 +382,7 @@
       "name": "Shampoo",
       "category": 7,
       "slug": "shampoo",
-      "price": 10,
+      "price": "10.00",
       "SKU": 723456,
       "description": "Nourishing shampoo for all hair types",
       "views": 50
@@ -316,7 +395,7 @@
       "name": "Lipstick",
       "category": 7,
       "slug": "lipstick",
-      "price": 20,
+      "price": "20.00",
       "SKU": 723457,
       "description": "Long-lasting lipstick",
       "views": 75
@@ -329,7 +408,7 @@
       "name": "Face Cream",
       "category": 7,
       "slug": "face-cream",
-      "price": 30,
+      "price": "30.00",
       "SKU": 723458,
       "description": "Moisturizing face cream",
       "views": 60
