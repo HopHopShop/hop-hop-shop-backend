@@ -1,43 +1,103 @@
-version: "3.7"
+version: "3.8"
 
 services:
-  web:
-    build:
-      context: .
-      dockerfile: Dockerfile-local
-    command: >
-      sh -c  "
-      python manage.py wait_for_db &&
-      python manage.py migrate && 
-      python manage.py collectstatic --noinput &&
-      gunicorn online_store.wsgi:application --bind 0.0.0.0:8000
-      "
-    volumes:
-      - .:/usr/src/app/
+
+  nginx:
+    image: nginx:1.27.1-alpine
+    container_name: nginx
+    restart: unless-stopped
     ports:
-      - 8000:8000
-    env_file:
-      - .env
+      - "80:80"
+    volumes: 
+      - app_build:/usr/share/nginx/html/.next
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
     depends_on:
-      - db
-      - redis
+      - front
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "nc", "-z", "localhost", "80"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
-  db:
-    image: postgres:14-alpine
+  my-db:
+    image: mariadb:11.5
+    container_name: hop_db_container
+    restart: unless-stopped
     environment:
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_DB: ${POSTGRES_DB}
-    env_file:
-      - .env
+      MYSQL_ROOT_PASSWORD: "my_password"
+      MYSQL_DATABASE: "hop_db"
+      MYSQL_USER: "hop_user"
+      MYSQL_PASSWORD: "hop_password"
+#    volumes:
+#      - app_db:/var/lib/mysql
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "bash", "/usr/local/bin/healthcheck.sh", "--su-mysql", "--connect", "--innodb_initialized"]
+      interval: 30s
+      timeout: 30s
+      retries: 3
 
-  redis:
-    image: redis:7.2
+  migrate-db:
+    image: flyway/flyway
+    command: -url=jdbc:mysql://my-db/hop_db -user=hop_user -password=hop_password migrate
+    depends_on:
+      - my-db
+    networks:
+      - app-network
+
+  back:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    container_name: hop_backend
+    restart: unless-stopped
+    depends_on:
+      my-db:
+        condition: service_healthy
+    environment:
+      DB_HOST: "my-db"
+      DB_NAME: "hop_db"
+      DB_USER: "hop_user"
+      DB_PASSWORD: "hop_password"
+    volumes:
+      - app_data:/data
+      # - static_volume:/usr/src/app/staticfiles:rw
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "http://localhost:3000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  front:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: hop_frontend
+    restart: unless-stopped
     ports:
-      - "6378:6379"
-    restart: always
-    environment:
-      - ALLOW_EMPTY_PASSWORD=yes
+      - 3000:3000
+    volumes:
+      - app_build:/var/www/app/.next 
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "http://localhost:3000/"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
+volumes:
+  app_data:
+  app_db:
+  frontend_build:
+  app_build:
+  # static_volume: 
 
-
+networks:
+  app-network:
+    driver: bridge
