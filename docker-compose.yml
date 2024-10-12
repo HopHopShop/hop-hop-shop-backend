@@ -75,7 +75,7 @@ services:
 
   front:
     build:
-      context: ./frontend
+      context: ./hophop-front
       dockerfile: Dockerfile
     container_name: hop_frontend
     restart: unless-stopped
