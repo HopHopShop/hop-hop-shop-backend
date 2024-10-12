@@ -1,7 +1,0 @@
-[submodule "backend"]
-	path = backend
-	url = https://github.com/HopHopShop/hop-hop-shop-backend.git
-[submodule "frontend"]
-	path = frontend
-	url = https://github.com/HopHopShop/hophop-front.git
-	
