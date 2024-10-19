@@ -13,5 +13,4 @@ class ShopConfig(AppConfig):
 
 
 def load_fixtures(sender, **kwargs):
-    if settings.DEBUG:
-        call_command("loaddata", "initial_data.json")
+    call_command("loaddata", "initial_data.json")
