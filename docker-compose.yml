@@ -2,51 +2,31 @@ version: "3.8"
 
 services:
 
-  # nginx:
-  #   image: nginx:1.27.1-alpine
-  #   container_name: nginx
-  #   restart: unless-stopped
-  #   ports:
-  #     - "80:80"
-  #   volumes: 
-  #     - app_build:/usr/share/nginx/html/.next
-  #     - ./nginx/nginx.conf:/etc/nginx/nginx.conf
-  #   depends_on:
-  #     - front
-  #   networks:
-  #     - app-network
-  #   healthcheck:
-  #     test: ["CMD", "nc", "-z", "localhost", "80"]
-  #     interval: 10s
-  #     timeout: 5s
-  #     retries: 5
-
   my-db:
-    image: mariadb:11.5
+    image: postgres:16.4
     container_name: hop_db_container
     restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: "my_password"
-      MYSQL_DATABASE: "hop_db"
-      MYSQL_USER: "hop_user"
-      MYSQL_PASSWORD: "hop_password"
+      POSTGRES_DB: "hop_db"
+      POSTGRES_USER: "hop_user"
+      POSTGRES_PASSWORD: "hop_password"
     volumes:
-     - app_db:/var/lib/mysql
+     - app_db:/var/lib/postgresql/data
     networks:
       - app-network
-    healthcheck:
-      test: ["CMD", "bash", "/usr/local/bin/healthcheck.sh", "--su-mysql", "--connect", "--innodb_initialized"]
-      interval: 30s
-      timeout: 30s
-      retries: 3
+    # healthcheck:
+    #   test: ["CMD", "bash", "/usr/local/bin/healthcheck.sh", "--su-mysql", "--connect", "--innodb_initialized"]
+    #   interval: 30s
+    #   timeout: 30s
+    #   retries: 3
 
-  migrate-db:
-    image: flyway/flyway
-    command: -url=jdbc:mysql://my-db/hop_db -user=hop_user -password=hop_password migrate
-    depends_on:
-      - my-db
-    networks:
-      - app-network
+  # migrate-db:
+  #   image: flyway/flyway
+  #   command: -url=jdbc:mysql://my-db/hop_db -user=hop_user -password=hop_password migrate
+  #   depends_on:
+  #     - my-db
+  #   networks:
+  #     - app-network
 
   back:
     build:
@@ -54,9 +34,9 @@ services:
       dockerfile: Dockerfile
     container_name: hop_backend
     restart: unless-stopped
-    depends_on:
-      my-db:
-        condition: service_healthy
+    # depends_on:
+    #   my-db:
+    #     condition: service_healthy
     environment:
       DB_HOST: "my-db"
       DB_NAME: "hop_db"
@@ -67,11 +47,11 @@ services:
       # - static_volume:/usr/src/app/staticfiles:rw
     networks:
       - app-network
-    healthcheck:
-      test: ["CMD", "wget", "--spider", "http://localhost:80/health"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+    # healthcheck:
+    #   test: ["CMD", "wget", "--spider", "http://localhost:80/health"]
+    #   interval: 10s
+    #   timeout: 5s
+    #   retries: 5
 
   front:
     build:
@@ -85,11 +65,11 @@ services:
       - app_build:/var/www/app/.next 
     networks:
       - app-network
-    healthcheck:
-      test: ["CMD", "wget", "--spider", "http://localhost:80/"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+    # healthcheck:
+    #   test: ["CMD", "wget", "--spider", "http://localhost:80/"]
+    #   interval: 10s
+    #   timeout: 5s
+    #   retries: 5
 
 volumes:
   app_data:
