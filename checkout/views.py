@@ -1,3 +1,4 @@
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import OrderingFilter
 from drf_spectacular.utils import extend_schema, OpenApiParameter
 from rest_framework import status, generics, viewsets
@@ -62,7 +63,7 @@ class CheckoutView(generics.CreateAPIView):
                     "order": serializer.validated_data,
                     "payment_id": payment_id,
                     "message": "Order created and payment successful",
-                    "sessionid": request.session.get("session_key", None),
+                    "sessionid": request.session.session_key,
                 },
                 status=status.HTTP_201_CREATED,
             )
@@ -73,7 +74,7 @@ class OrderListView(viewsets.ModelViewSet):
     permission_classes = (IsAdminUser,)
     pagination_class = Pagination
     filterset_class = OrderFilter
-    filter_backends = [OrderingFilter]
+    filter_backends = [DjangoFilterBackend, OrderingFilter]
     ordering_fields = ['id']
 
     queryset = Order.objects.all().select_related("customer")

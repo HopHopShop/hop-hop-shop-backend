@@ -293,5 +293,10 @@ class ProfileOrder(viewsets.ReadOnlyModelViewSet):
     pagination_class = Pagination
     serializer_class = OrderSerializer
 
+    def get_serializer_class(self):
+        if self.action == "list":
+            return OrderListSerializer
+        return OrderSerializer
+
     def get_queryset(self):
         return Order.objects.filter(customer=self.request.user).select_related("customer")

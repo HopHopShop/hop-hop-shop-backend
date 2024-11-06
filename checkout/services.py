@@ -142,6 +142,10 @@ class DashboardStatistic:
     active_orders: int
     completed_orders: int
     returned_orders: int
+    total_orders_growth: float
+    active_orders_growth: float
+    completed_orders_growth: float
+    returned_orders_growth: float
 
 
 class DashboardStatisticService:
@@ -151,6 +155,7 @@ class DashboardStatisticService:
     def get_order_statistics(self) -> DashboardStatistic:
         start_date = timezone.now() - timedelta(days=self.period)
         orders = Order.objects.filter(created_at__gte=start_date)
+
         total_orders = orders.count()
         active_orders = orders.filter(
             order_status__in=(
@@ -159,15 +164,55 @@ class DashboardStatisticService:
                 OrderStatus.STATUS_IN_TRANSIT,
             )
         ).count()
+
         completed_orders = orders.filter(
             order_status=OrderStatus.STATUS_DELIVERED
         ).count()
+
         returned_orders = orders.filter(
             order_status=OrderStatus.STATUS_RETURNED
         ).count()
+
+        previous_start_date = start_date - timedelta(days=self.period)
+        previous_orders = Order.objects.filter(
+            created_at__gte=previous_start_date,
+            created_at__lt=start_date,
+        )
+
+        previous_total_orders = previous_orders.count()
+        previous_active_orders = previous_orders.filter(
+            order_status__in=(
+                OrderStatus.STATUS_PENDING,
+                OrderStatus.STATUS_IN_PROGRESS,
+                OrderStatus.STATUS_IN_TRANSIT,
+            )
+        ).count()
+
+        previous_completed_orders = previous_orders.filter(
+            order_status=OrderStatus.STATUS_DELIVERED
+        ).count()
+
+        previous_returned_orders = previous_orders.filter(
+            order_status=OrderStatus.STATUS_RETURNED
+        ).count()
+
+        total_orders_growth = self.calculate_growth(total_orders, previous_total_orders)
+        active_orders_growth = self.calculate_growth(active_orders, previous_active_orders)
+        completed_orders_growth = self.calculate_growth(completed_orders, previous_completed_orders)
+        returned_orders_growth = self.calculate_growth(returned_orders, previous_returned_orders)
+
         return DashboardStatistic(
             total_orders=total_orders,
             active_orders=active_orders,
             completed_orders=completed_orders,
             returned_orders=returned_orders,
+            total_orders_growth=total_orders_growth,
+            active_orders_growth=active_orders_growth,
+            completed_orders_growth=completed_orders_growth,
+            returned_orders_growth=returned_orders_growth,
         )
+
+    def calculate_growth(self, current: int, previous: int) -> float:
+        if previous == 0:
+            return 100.0 if current > 0 else 0.0
+        return ((current - previous) / previous) * 100

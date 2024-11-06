@@ -21,7 +21,28 @@ class ProductImageSerializer(serializers.ModelSerializer):
         fields = (
             "id",
             "image",
+            "order"
         )
+
+
+class ChangeImageOrderingSerializer(serializers.Serializer):
+    image_ids = serializers.ListField(
+        child=serializers.IntegerField(),
+        allow_empty=False,
+        help_text="An ordered list of image IDs to reorder"
+    )
+
+    def validate_image_ids(self, value):
+        # Ensure that all IDs are valid and belong to the product
+        product = self.context
+        product_image_ids = product.product_images.values_list("id", flat=True)
+
+        print(product_image_ids)
+
+        if set(value) != set(product_image_ids):
+            raise serializers.ValidationError("Invalid image IDs provided.")
+
+        return value
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -125,7 +146,6 @@ class ProductCreateUpdateSerializer(serializers.ModelSerializer):
     )
     slug = serializers.CharField(read_only=True)
     SKU = serializers.CharField(required=False)
-
 
     class Meta:
         model = Product

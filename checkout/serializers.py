@@ -102,6 +102,8 @@ class OrderSerializer(serializers.ModelSerializer):
     subtotal_price = serializers.SerializerMethodField()
     total_price = serializers.SerializerMethodField()
     discount = serializers.SerializerMethodField()
+    tax_percent = serializers.SerializerMethodField()
+    shipping_rate = serializers.SerializerMethodField()
 
     class Meta:
         model = Order
@@ -112,8 +114,6 @@ class OrderSerializer(serializers.ModelSerializer):
             "last_name",
             "email",
             "phone",
-            "shipping_country",
-            "shipping_city",
             "shipping_address",
             "shipping_postcode",
             "payment_id",
@@ -124,6 +124,8 @@ class OrderSerializer(serializers.ModelSerializer):
             "subtotal_price",
             "total_price",
             "coupon",
+            "tax_percent",
+            "shipping_rate",
             "discount",
             "card_information",
         ]
@@ -147,15 +149,26 @@ class OrderSerializer(serializers.ModelSerializer):
     def get_subtotal_price(self, obj):
         return sum(item.quantity * item.price for item in obj.items.all())
 
+    def get_tax_percent(self, obj):
+        return Decimal(20)
+
+    def get_shipping_rate(self, obj):
+        return 20
+
     def get_discount(self, obj):
         if obj.coupon:
             return obj.coupon.discount
 
     def get_total_price(self, obj):
-        discount = self.get_discount(obj)
+        discount = self.get_discount(obj) if obj.coupon else 0
         subtotal_price = self.get_subtotal_price(obj)
-        if discount:
-            return subtotal_price - (subtotal_price * Decimal(discount / 100))
+        tax = self.get_tax_percent(obj)
+        shipping_rate = self.get_shipping_rate(obj)
+
+        subtotal_price -= (subtotal_price * Decimal(discount / 100))
+        subtotal_price -= (subtotal_price * Decimal(tax / 100))
+        subtotal_price -= shipping_rate
+
         return subtotal_price
 
     def create(self, validated_data):
@@ -174,6 +187,10 @@ class DashboardStatisticSerializer(serializers.Serializer):
     active_orders = serializers.IntegerField()
     completed_orders = serializers.IntegerField()
     returned_orders = serializers.IntegerField()
+    total_orders_growth = serializers.FloatField()
+    active_orders_growth = serializers.FloatField()
+    completed_orders_growth = serializers.FloatField()
+    returned_orders_growth = serializers.FloatField()
 
     def create(self, validated_data):
         return DashboardStatistic(**validated_data)
